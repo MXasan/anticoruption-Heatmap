@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anti-Korrupsiya Portal</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+</head>
+<body>
+<div class="app">
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('map')">🗺 Xarita</div>
+    <div class="tab" onclick="switchTab('rating')">⭐ Ishonch reytingi</div>
+  </div>
+
+  <!-- MAP PAGE -->
+  <div class="page active" id="page-map">
+    <div class="map-wrap">
+      <div class="map-panel">
+        <div id="map"></div>
+        <div class="map-hint">Xaritada bosing — joy tanlash</div>
+      </div>
+      <div class="side">
+        <div class="side-head">
+          <h3>Anonim xabar berish</h3>
+          <p>Ma'lumotlar saqlanmaydi</p>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="stat-n" id="sc">7</div><div class="stat-l">Jami</div></div>
+          <div class="stat"><div class="stat-n" id="rc">4</div><div class="stat-l">Shahar</div></div>
+          <div class="stat"><div class="stat-n" id="tc">2</div><div class="stat-l">Bugun</div></div>
+        </div>
+        <div class="form">
+          <div class="anon"><div class="anon-dot"></div>Anonim — IP saqlanmaydi</div>
+          <div class="field">
+            <label>Joylashuv</label>
+            <div class="search-wrap">
+              <input id="addr-input" placeholder="Qidiring yoki xaritada bosing..." autocomplete="off" oninput="onAddrInput(this.value)"/>
+              <div id="suggestions"></div>
+            </div>
+            <div class="loc-chosen" id="loc-chosen">✓ <span id="loc-text"></span></div>
+          </div>
+          <div class="field">
+            <label for="sector">Soha</label>
+            <select id="sector">
+              <option value="">Tanlang...</option>
+              <option>Ta'lim</option><option>Sog'liqni saqlash</option>
+              <option>Qurilish</option><option>Sport</option>
+              <option>Davlat xaridlari</option><option>Boshqa</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Nima bo'ldi?</label>
+            <textarea id="desc" placeholder="Oddiy tilda yozing..."></textarea>
+          </div>
+          <div class="btn-row">
+            <button class="btn" onclick="submitReport(false)">Yuborish</button>
+            <button class="btn btn-ai" onclick="submitReport(true)">AI bilan ↗</button>
+          </div>
+          <div class="loading" id="loading">AI qayta yozmoqda...</div>
+          <div class="result-box" id="result-box"><div class="result-lbl">Rasmiy shakl</div><div id="result-text"></div></div>
+        </div>
+        <div class="feed">
+          <div class="feed-title">So'nggi xabarlar</div>
+          <div id="feed"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RATING PAGE -->
+  <div class="page" id="page-rating">
+    <div class="rating-page">
+      <div class="rating-header">
+        <div>
+          <h3>Ishonch reytingi</h3>
+          <p>Fuqarolar shikoyatlari asosida hisoblangan</p>
+        </div>
+      </div>
+
+      <div class="podium" id="podium"></div>
+
+      <div class="filter-row" id="filters">
+        <button class="filter-btn active" onclick="filterOrgs('all',this)">Barchasi</button>
+        <button class="filter-btn" onclick="filterOrgs('Ta\'lim',this)">Ta'lim</button>
+        <button class="filter-btn" onclick="filterOrgs('Sog\'liqni saqlash',this)">Sog'liq</button>
+        <button class="filter-btn" onclick="filterOrgs('Qurilish',this)">Qurilish</button>
+        <button class="filter-btn" onclick="filterOrgs('Davlat xaridlari',this)">Xaridlar</button>
+        <button class="filter-btn" onclick="filterOrgs('Sport',this)">Sport</button>
+      </div>
+
+      <div id="org-list"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
