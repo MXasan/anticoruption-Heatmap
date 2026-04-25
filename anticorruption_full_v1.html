@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="uz">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,96 +10,199 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
 </head>
+
 <body>
-<div class="app">
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('map')">🗺 Xarita</div>
-    <div class="tab" onclick="switchTab('rating')">⭐ Ishonch reytingi</div>
-  </div>
+  <div class="app">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('map')">🗺 Xarita</div>
+      <div class="tab" onclick="switchTab('rating')">⭐ Ishonch reytingi</div>
+      <div class="tab" onclick="switchTab('ai')">🤖 AI Monitoring</div>
+    </div>
 
-  <!-- MAP PAGE -->
-  <div class="page active" id="page-map">
-    <div class="map-wrap">
-      <div class="map-panel">
-        <div id="map"></div>
-        <div class="map-hint">Xaritada bosing — joy tanlash</div>
-      </div>
-      <div class="side">
-        <div class="side-head">
-          <h3>Anonim xabar berish</h3>
-          <p>Ma'lumotlar saqlanmaydi</p>
-        </div>
-        <div class="stats">
-          <div class="stat"><div class="stat-n" id="sc">7</div><div class="stat-l">Jami</div></div>
-          <div class="stat"><div class="stat-n" id="rc">4</div><div class="stat-l">Shahar</div></div>
-          <div class="stat"><div class="stat-n" id="tc">2</div><div class="stat-l">Bugun</div></div>
-        </div>
-        <div class="form">
-          <div class="anon"><div class="anon-dot"></div>Anonim — IP saqlanmaydi</div>
-          <div class="field">
-            <label>Joylashuv</label>
-            <div class="search-wrap">
-              <input id="addr-input" placeholder="Qidiring yoki xaritada bosing..." autocomplete="off" oninput="onAddrInput(this.value)"/>
-              <div id="suggestions"></div>
+    <!-- MAP PAGE -->
+    <div class="page active" id="page-map">
+      <div class="map-wrap">
+        <div class="map-panel">
+          <div id="map"></div>
+          <div class="report-detail" id="report-detail">
+            <div class="report-detail-header">
+              <div>
+                <div class="report-detail-title" id="detail-title"></div>
+                <div class="report-detail-meta" id="detail-meta"></div>
+              </div>
+              <button class="detail-close" onclick="hideReportDetail()">×</button>
             </div>
-            <div class="loc-chosen" id="loc-chosen">✓ <span id="loc-text"></span></div>
+            <div class="report-detail-body" id="detail-body"></div>
           </div>
-          <div class="field">
-            <label for="sector">Soha</label>
-            <select id="sector">
-              <option value="">Tanlang...</option>
-              <option>Ta'lim</option><option>Sog'liqni saqlash</option>
-              <option>Qurilish</option><option>Sport</option>
-              <option>Davlat xaridlari</option><option>Boshqa</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Nima bo'ldi?</label>
-            <textarea id="desc" placeholder="Oddiy tilda yozing..."></textarea>
-          </div>
-          <div class="btn-row">
-            <button class="btn" onclick="submitReport(false)">Yuborish</button>
-            <button class="btn btn-ai" onclick="submitReport(true)">AI bilan ↗</button>
-          </div>
-          <div class="loading" id="loading">AI qayta yozmoqda...</div>
-          <div class="result-box" id="result-box"><div class="result-lbl">Rasmiy shakl</div><div id="result-text"></div></div>
+          <div class="map-hint">Xaritada bosing — joy tanlash</div>
         </div>
-        <div class="feed">
-          <div class="feed-title">So'nggi xabarlar</div>
-          <div id="feed"></div>
+        <div class="side">
+          <div class="side-head">
+            <h3>Anonim xabar berish</h3>
+            <p>Ma'lumotlar saqlanmaydi</p>
+          </div>
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-n" id="sc">7</div>
+              <div class="stat-l">Jami</div>
+            </div>
+            <div class="stat">
+              <div class="stat-n" id="rc">4</div>
+              <div class="stat-l">Shahar</div>
+            </div>
+            <div class="stat">
+              <div class="stat-n" id="tc">2</div>
+              <div class="stat-l">Bugun</div>
+            </div>
+          </div>
+          <div class="form">
+            <div class="anon">
+              <div class="anon-dot"></div>Anonim — IP saqlanmaydi
+            </div>
+            <div class="field">
+              <label>Joylashuv</label>
+              <div class="search-wrap">
+                <input id="addr-input" placeholder="Qidiring yoki xaritada bosing..." autocomplete="off"
+                  oninput="onAddrInput(this.value)" />
+                <div id="suggestions"></div>
+              </div>
+              <div class="loc-chosen" id="loc-chosen">✓ <span id="loc-text"></span></div>
+            </div>
+            <div class="field">
+              <label for="sector">Soha</label>
+              <select id="sector">
+                <option value="">Tanlang...</option>
+                <option>Ta'lim</option>
+                <option>Sog'liqni saqlash</option>
+                <option>Qurilish</option>
+                <option>Sport</option>
+                <option>Davlat xaridlari</option>
+                <option>Boshqa</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Nima bo'ldi?</label>
+              <textarea id="desc" placeholder="Oddiy tilda yozing..."></textarea>
+            </div>
+            <div class="btn-row">
+              <button class="btn" onclick="submitReport(false)">Yuborish</button>
+              <button class="btn btn-ai" onclick="submitReport(true)">AI bilan ↗</button>
+            </div>
+            <div class="loading" id="loading">AI qayta yozmoqda...</div>
+            <div class="result-box" id="result-box">
+              <div class="result-lbl">Rasmiy shakl</div>
+              <div id="result-text"></div>
+            </div>
+          </div>
+          <div class="feed">
+            <div class="feed-title">So'nggi xabarlar</div>
+            <div id="feed"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RATING PAGE -->
+    <div class="page" id="page-rating">
+      <div class="rating-page">
+        <div class="rating-header">
+          <div>
+            <h3>Ishonch reytingi</h3>
+            <p>Fuqarolar shikoyatlari asosida hisoblangan</p>
+          </div>
+        </div>
+
+        <div class="podium" id="podium"></div>
+
+        <div class="filter-row" id="filters">
+          <button class="filter-btn active" onclick="filterOrgs('all',this)">Barchasi</button>
+          <button class="filter-btn" onclick="filterOrgs('Ta\'lim',this)">Ta'lim</button>
+          <button class="filter-btn" onclick="filterOrgs('Sog\'liqni saqlash',this)">Sog'liq</button>
+          <button class="filter-btn" onclick="filterOrgs('Qurilish',this)">Qurilish</button>
+          <button class="filter-btn" onclick="filterOrgs('Davlat xaridlari',this)">Xaridlar</button>
+          <button class="filter-btn" onclick="filterOrgs('Sport',this)">Sport</button>
+        </div>
+
+        <div id="org-list"></div>
+      </div>
+    </div>
+
+    <!-- AI MONITORING PAGE -->
+    <div class="page" id="page-ai">
+      <div class="ai-page">
+        <div class="ai-header">
+          <div>
+            <h3>🤖 AI Hotspot Monitoring</h3>
+            <p>Sun'iy intellekt korrupsiya xavfi yuqori hududlarni avtomatik aniqlaydi</p>
+          </div>
+          <div class="test-mode-badge">
+            <div class="test-mode-dot"></div>
+            TEST REJIM
+          </div>
+        </div>
+
+        <div class="ai-warning-banner">
+          <div class="ai-warning-icon">⚠️</div>
+          <div class="ai-warning-text">
+            <strong>Test rejimi faol</strong> — Hozircha AntiCore tizimiga hech qanday ma'lumot yuborilmaydi.
+            AI tahlillari faqat ko'rsatish uchun ishlamoqda.
+          </div>
+        </div>
+
+        <div class="ai-stats-row">
+          <div class="ai-stat-card">
+            <div class="ai-stat-icon">🔍</div>
+            <div class="ai-stat-number" id="ai-total-reports">0</div>
+            <div class="ai-stat-label">Jami shikoyatlar</div>
+          </div>
+          <div class="ai-stat-card">
+            <div class="ai-stat-icon">🔥</div>
+            <div class="ai-stat-number" id="ai-hotspot-count">0</div>
+            <div class="ai-stat-label">Aniqlangan hotspotlar</div>
+          </div>
+          <div class="ai-stat-card">
+            <div class="ai-stat-icon">📊</div>
+            <div class="ai-stat-number" id="ai-risk-level">—</div>
+            <div class="ai-stat-label">Umumiy risk darajasi</div>
+          </div>
+          <div class="ai-stat-card">
+            <div class="ai-stat-icon">🚫</div>
+            <div class="ai-stat-number" id="ai-sent-count">0</div>
+            <div class="ai-stat-label">AntiCore'ga yuborilgan</div>
+          </div>
+        </div>
+
+        <div class="ai-section-title">
+          <span>Aniqlangan hotspotlar</span>
+          <button class="ai-scan-btn" onclick="runAIScan()">
+            <span class="ai-scan-icon">⟳</span> Qayta skanerlash
+          </button>
+        </div>
+
+        <div id="ai-hotspots-list">
+          <div class="ai-empty-state">
+            <div class="ai-empty-icon">🔍</div>
+            <div class="ai-empty-text">AI skanerlash kuting...</div>
+            <div class="ai-empty-sub">Hududlarni tahlil qilish uchun "Qayta skanerlash" tugmasini bosing</div>
+          </div>
+        </div>
+
+        <div class="ai-section-title" style="margin-top:24px">
+          <span>AI Tahlil Logi</span>
+        </div>
+        <div class="ai-log" id="ai-log">
+          <div class="ai-log-entry ai-log-info">
+            <span class="ai-log-time">--:--</span>
+            <span class="ai-log-msg">Tizim ishga tayyor. Skanerlash boshlash uchun tugmani bosing.</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- RATING PAGE -->
-  <div class="page" id="page-rating">
-    <div class="rating-page">
-      <div class="rating-header">
-        <div>
-          <h3>Ishonch reytingi</h3>
-          <p>Fuqarolar shikoyatlari asosida hisoblangan</p>
-        </div>
-      </div>
-
-      <div class="podium" id="podium"></div>
-
-      <div class="filter-row" id="filters">
-        <button class="filter-btn active" onclick="filterOrgs('all',this)">Barchasi</button>
-        <button class="filter-btn" onclick="filterOrgs('Ta\'lim',this)">Ta'lim</button>
-        <button class="filter-btn" onclick="filterOrgs('Sog\'liqni saqlash',this)">Sog'liq</button>
-        <button class="filter-btn" onclick="filterOrgs('Qurilish',this)">Qurilish</button>
-        <button class="filter-btn" onclick="filterOrgs('Davlat xaridlari',this)">Xaridlar</button>
-        <button class="filter-btn" onclick="filterOrgs('Sport',this)">Sport</button>
-      </div>
-
-      <div id="org-list"></div>
-    </div>
-  </div>
-</div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-<script src="app.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="app.js"></script>
 </body>
+
 </html>
