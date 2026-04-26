@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anticorruption Monitor</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+</head>
+<body>
+<div class="app">
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab on" onclick="switchTab('map',this)">🗺 Xarita</div>
+    <div class="tab" onclick="switchTab('rating',this)">⭐ Reyting</div>
+    <div class="tab" onclick="switchTab('detector',this)">🤖 AI Monitor</div>
+  </div>
+
+  <!-- MAP PAGE -->
+  <div class="page on map-page" id="page-map">
+      <div class="map-area">
+        <div id="map"></div>
+        <div class="map-hint">Xaritada bosing — joy tanlash</div>
+        <div class="legend" id="legend"></div>
+        <div class="toast" id="toast">
+          <div class="t-head"><span>🤖</span><span class="t-title" id="t-title"></span><span class="t-x" onclick="closeToast()">×</span></div>
+          <div class="t-body" id="t-body"></div>
+          <span class="t-link" onclick="openFromToast()">Batafsil →</span>
+        </div>
+      </div>
+      <div class="side">
+        <div class="panel" id="panel-form">
+          <div class="pf-head"><h3>Anonim xabar berish</h3><p>Ma'lumotlar saqlanmaydi</p></div>
+          <div class="pf-stats">
+            <div class="stat"><div class="stat-n" id="sc">0</div><div class="stat-l">Jami</div></div>
+            <div class="stat"><div class="stat-n" id="rc">0</div><div class="stat-l">Shahar</div></div>
+            <div class="stat"><div class="stat-n" id="tc">0</div><div class="stat-l">Bugun</div></div>
+          </div>
+          <div class="pf-form">
+            <div class="anon"><div class="anon-dot"></div>Anonim — IP saqlanmaydi</div>
+            <div class="field"><label for="addr-input">Joylashuv</label>
+              <div class="search-wrap">
+                <input type="text" id="addr-input" placeholder="Qidiring yoki xaritada bosing..." autocomplete="off" oninput="onAddr(this.value)"/>
+                <div id="suggestions"></div>
+              </div>
+              <div class="loc-ok" id="loc-ok">✓ <span id="loc-text"></span></div>
+            </div>
+            <div class="field"><label for="sector">Soha</label>
+              <select id="sector"><option value="">Tanlang...</option><option>Ta'lim</option><option>Sog'liqni saqlash</option><option>Qurilish</option><option>Sport</option><option>Davlat xaridlari</option><option>Boshqa</option></select>
+            </div>
+            <div class="field"><label for="desc">Nima bo'ldi?</label><textarea id="desc" placeholder="Oddiy tilda yozing..."></textarea></div>
+            <div class="btn-row">
+              <button class="btn" onclick="doSubmit(false)">Yuborish</button>
+              <button class="btn btn-ai" onclick="doSubmit(true)">AI bilan ↗</button>
+            </div>
+            <div class="sub-load" id="sub-load">AI qayta yozmoqda...</div>
+            <div class="sub-res" id="sub-res"><div class="sub-res-lbl">Rasmiy shakl</div><div id="sub-res-text"></div></div>
+          </div>
+          <div class="pf-feed"><div class="feed-title">So'nggi xabarlar</div><div id="feed"></div></div>
+        </div>
+        <div class="panel hidden" id="panel-detail">
+          <div class="pd-head">
+            <div class="pd-head-left">
+              <div class="pd-back" onclick="closeDetail()">← Orqaga</div>
+              <div class="pd-sector" id="d-sector"></div>
+              <div class="pd-addr" id="d-addr"></div>
+            </div>
+            <span class="pd-close" onclick="closeDetail()">×</span>
+          </div>
+          <div class="pd-stats">
+            <div class="stat"><div class="stat-n" id="d-count"></div><div class="stat-l">Shikoyat</div></div>
+            <div class="stat"><div class="stat-n" id="d-risk"></div><div class="stat-l">Risk skori</div></div>
+          </div>
+          <div class="pd-body">
+            <div class="pd-sec"><div class="sec-lbl" id="d-rep-lbl">Shikoyatlar</div><div id="d-reports"></div></div>
+            <div class="pd-sec pd-signal" id="pd-signal">
+              <div class="sec-lbl">🤖 AI avtomatik signal</div>
+              <div class="signal-box"><div class="sig-title">📄 Antikorrupsiya organiga rasmiy xabar</div><div class="sig-text" id="d-sig"></div></div>
+              <div class="test-badge"><div class="test-dot"></div>TEST MODE — hozir yuborilmaydi. Real API ulanganda avtomatik ishlaydi.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <!-- RATING PAGE -->
+  <div class="page" id="page-rating">
+    <div class="rating-page">
+      <div class="r-topbar">
+        <div><h2>Viloyatlar ishonch reytingi</h2><p>Fuqarolar shikoyatlari asosida hisoblangan</p></div>
+        <span class="r-updated">Yangilangan: bugun</span>
+      </div>
+      <div class="podium" id="podium"></div>
+      <div class="r-filters">
+        <button class="fb on" onclick="setFilter('all',this)">Barchasi</button>
+        <button class="fb" onclick="setFilter('high',this)">✅ Ishonchli</button>
+        <button class="fb" onclick="setFilter('mid',this)">⚠️ O'rtacha</button>
+        <button class="fb" onclick="setFilter('low',this)">🔴 Xavfli</button>
+      </div>
+      <div class="rgrid" id="rgrid"></div>
+    </div>
+  </div>
+
+  <!-- AI MONITOR PAGE -->
+  <div class="page" id="page-detector">
+    <div class="detector-panel">
+      <div class="detector-header">
+        <div>
+          <h3 class="detector-title">🤖 AI Monitor</h3>
+          <p class="detector-subtitle">Bir joyda 3+ shikoyat bo'lsa — AI avtomatik signal tayyorlaydi</p>
+        </div>
+        <button class="btn btn-small" onclick="runDetector()">Yangilash ▶</button>
+      </div>
+      <div class="detector-note">
+        <strong class="detector-note-title">⚠️ TEST MODE</strong>
+        Signallar faqat ko'rib chiqish uchun tayyorlanadi. Antikorrupsiya organiga avtomatik yuborish o'chirilgan — har bir signal inson tomonidan tekshirilishi kerak.
+      </div>
+      <div id="det-loading" class="det-loading">
+        <div class="det-spinner"></div>
+        Tahlil qilinmoqda...
+      </div>
+      <div id="det-list"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
